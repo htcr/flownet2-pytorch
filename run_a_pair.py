@@ -4,31 +4,15 @@ import argparse
 import cv2
 import cvbase as cvb
 
-from models import FlowNet2#the path is depended on where you create this module
-from utils.frame_utils import read_gen#the path is depended on where you create this module 
+from masker.flownet2_diff.models import FlowNet2#the path is depended on where you create this module
+from masker.flownet2_diff.utils.frame_utils import read_gen#the path is depended on where you create this module 
+from utils import limit_img_size, block_img_size, resize_img
 
-
-def block_img_size(ori_size, block_size):
-    ori_h, ori_w = ori_size
-    new_h, new_w = ori_h // block_size * block_size, ori_w // block_size * block_size
-    return (new_h, new_w)
-
-def limit_img_size(ori_size, max_edge):
-    ori_h, ori_w = ori_size
-    ori_max = max(ori_h, ori_w)
-    scale = min(max_edge / ori_max, 1.0)
-    new_h, new_w = int(scale * ori_h), int(scale * ori_w)
-    return (new_h, new_w)
-    
-def resize_img(img, new_size):
-    new_h, new_w = new_size
-    new_img = cv2.resize(img, (new_w, new_h))
-    return new_img
 
 def flownet2_preprocess(img):
     ori_size = img.shape[:2]
-    new_size = limit_img_size(ori_size, 1024)
-    new_size = block_img_size(new_size, 64)
+    new_size = limit_img_size(ori_size, 2048)
+    new_size = block_img_size(new_size, 64) 
     new_img = resize_img(img, new_size)
     return new_img
 
